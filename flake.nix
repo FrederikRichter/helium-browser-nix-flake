@@ -139,8 +139,7 @@
                 --add-flags "--disable-component-update" \
                 --add-flags "--simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'" \
                 --add-flags "--check-for-update-interval=0" \
-                --add-flags "--disable-background-networking" \
-                --add-flags "--disable-features=WaylandWpColorManagerV1"
+                --add-flags "--disable-background-networking"
 
 
               runHook postInstall
@@ -161,12 +160,13 @@
                 alsa-lib
                 libpulseaudio
               ])}" \
-                --add-flags "--ozone-platform-hint=auto" \
+                --add-flags "--ozone-platform-hint=wayland" \
                 --add-flags "--enable-features=WaylandWindowDecorations" \
                 --add-flags "--disable-component-update" \
                 --add-flags "--simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'" \
                 --add-flags "--check-for-update-interval=0" \
-                --add-flags "--disable-background-networking"
+                --add-flags "--disable-background-networking" \
+                --add-flags "--disable-features='WaylandWpColorManagerV1'"
 
               # Install icon
               mkdir -p $out/share/icons/hicolor/256x256/apps
