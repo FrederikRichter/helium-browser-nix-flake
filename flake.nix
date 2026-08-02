@@ -139,7 +139,9 @@
                 --add-flags "--disable-component-update" \
                 --add-flags "--simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'" \
                 --add-flags "--check-for-update-interval=0" \
-                --add-flags "--disable-background-networking"
+                --add-flags "--disable-background-networking" \
+                --add-flags "--disable-features=WaylandWpColorManagerV1"
+
 
               runHook postInstall
             ''
