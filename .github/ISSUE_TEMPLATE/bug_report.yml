@@ -27,12 +27,16 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: dropdown
     id: system
     attributes:
       label: System architecture
       description: The Nix system where the problem occurs.
-      placeholder: x86_64-linux
+      options:
+        - x86_64-linux
+        - aarch64-linux
+        - aarch64-darwin
+        - x86_64-darwin
     validations:
       required: true
 
