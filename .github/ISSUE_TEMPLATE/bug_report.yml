@@ -1,0 +1,76 @@
+name: Bug report
+description: Report a problem with the Helium Browser Nix flake
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please include enough detail for us to reproduce the problem.
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: Include your distribution and version (for example, NixOS 26.05 or Ubuntu 24.04).
+      placeholder: NixOS 26.05
+    validations:
+      required: true
+
+  - type: input
+    id: helium-version
+    attributes:
+      label: Helium Version
+      description: You can find this at helium://version.
+      placeholder: 0.7.6.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: system
+    attributes:
+      label: System architecture
+      description: The Nix system where the problem occurs.
+      options:
+        - x86_64-linux
+        - aarch64-linux
+        - aarch64-darwin
+        - x86_64-darwin
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected to happen instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that reliably causes the problem.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or additional context
+      description: Paste relevant logs, error messages, flake revision details, or other context here.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched the existing issues and did not find a duplicate.
+          required: true
