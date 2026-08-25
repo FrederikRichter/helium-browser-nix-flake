@@ -23,28 +23,28 @@
         };
 
         versions = {
-          linux = "0.15.5.1";
-          darwin = "0.15.5.1";
+          linux = "0.15.7.1";
+          darwin = "0.15.7.1";
         };
 
-        version = if pkgs.stdenv.isDarwin then versions.darwin else versions.linux;
+        version = if pkgs.stdenv.hostPlatform.isDarwin then versions.darwin else versions.linux;
 
         srcs = {
           x86_64-linux = {
             url = "https://github.com/imputnet/helium-linux/releases/download/${versions.linux}/helium-${versions.linux}-x86_64_linux.tar.xz";
-            hash = "sha256-80oe4aarLjEJ2S45OVEqN8/mii8NIwtSXMFYn8GS/Zc=";
+            hash = "sha256-MQKJLN69/g1R46Y44ADo1UvKAXxS2vKsq/XlAwBO+58=";
           };
           aarch64-linux = {
             url = "https://github.com/imputnet/helium-linux/releases/download/${versions.linux}/helium-${versions.linux}-arm64_linux.tar.xz";
-            hash = "sha256-2TI9B3GjdN5eWmZqfnVOIfKYwjjqwh345YaKx7X2TP4=";
+            hash = "sha256-CYHUDYEMwe+2//4cDPMS2VqcRfbRJD0USDxDJ7kKu6Q=";
           };
           x86_64-darwin = {
             url = "https://github.com/imputnet/helium-macos/releases/download/${versions.darwin}/helium_${versions.darwin}_x86_64-macos.dmg";
-            hash = "sha256-lOl+NOMc7e+7eQKxVuFAGBk1ngTpZhYbBC+R+KyTOK8=";
+            hash = "sha256-vQ3CkgEQHCPDvlxW24zNVkFM42OkfHIHHgmvcehU0ic=";
           };
           aarch64-darwin = {
             url = "https://github.com/imputnet/helium-macos/releases/download/${versions.darwin}/helium_${versions.darwin}_arm64-macos.dmg";
-            hash = "sha256-zKjDii66+j9hr04+xHe1is4kDhq9tX8YVHjK2P8kzl0=";
+            hash = "sha256-QQT3dtBKQvnGi3ySsgaVeXGqKIJ/iys5fDApZnDlt5E=";
           };
         };
 
@@ -58,20 +58,20 @@
             [
               makeWrapper
             ]
-            ++ pkgs.lib.optionals stdenv.isLinux [
+            ++ pkgs.lib.optionals stdenv.hostPlatform.isLinux [
               autoPatchelfHook
               copyDesktopItems
             ]
-            ++ pkgs.lib.optionals stdenv.isDarwin [
+            ++ pkgs.lib.optionals stdenv.hostPlatform.isDarwin [
               _7zz
             ];
 
-          unpackCmd = pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+          unpackCmd = pkgs.lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
             7zz x $src
           '';
 
           buildInputs = with pkgs;
-            pkgs.lib.optionals stdenv.isLinux [
+            pkgs.lib.optionals stdenv.hostPlatform.isLinux [
               alsa-lib
               at-spi2-atk
               at-spi2-core
@@ -115,7 +115,7 @@
               kdePackages.qtbase
             ];
 
-          autoPatchelfIgnoreMissingDeps = pkgs.lib.optionals pkgs.stdenv.isLinux [
+          autoPatchelfIgnoreMissingDeps = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
             "libQt6Core.so.6"
             "libQt6Gui.so.6"
             "libQt6Widgets.so.6"
@@ -124,10 +124,10 @@
             "libQt5Widgets.so.5"
           ];
 
-          dontWrapQtApps = pkgs.stdenv.isLinux;
+          dontWrapQtApps = pkgs.stdenv.hostPlatform.isLinux;
 
           installPhase =
-            if pkgs.stdenv.isDarwin
+            if pkgs.stdenv.hostPlatform.isDarwin
             then ''
               runHook preInstall
 
@@ -175,7 +175,7 @@
               runHook postInstall
             '';
 
-          desktopItems = pkgs.lib.optionals pkgs.stdenv.isLinux [
+          desktopItems = pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
             (pkgs.makeDesktopItem {
               name = "helium";
               exec = "helium %U";
