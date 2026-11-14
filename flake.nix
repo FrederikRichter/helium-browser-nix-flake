@@ -3,28 +3,24 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # nixpkgs 26.11 and later no longer support x86_64-darwin. Keep that
-    # platform available with the supported Darwin maintenance branch.
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
     utils.url = "github:numtide/flake-utils";
   };
 
   outputs = {
     self,
     nixpkgs,
-    nixpkgs-darwin,
     utils,
   }:
-    utils.lib.eachDefaultSystem (
+    utils.lib.eachSystem ["x86_64-linux" "aarch64-linux" "aarch64-darwin"] (
       system: let
-        pkgs = import (if system == "x86_64-darwin" then nixpkgs-darwin else nixpkgs) {
+        pkgs = import nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
 
         versions = {
-          linux = "0.21.2.1";
-          darwin = "0.21.2.1";
+          linux = "0.21.3.1";
+          darwin = "0.21.3.1";
         };
 
         version = if pkgs.stdenv.hostPlatform.isDarwin then versions.darwin else versions.linux;
@@ -32,19 +28,15 @@
         srcs = {
           x86_64-linux = {
             url = "https://github.com/imputnet/helium-linux/releases/download/${versions.linux}/helium-${versions.linux}-x86_64_linux.tar.xz";
-            hash = "sha256-5VwlPggvePta4JTKRlpZ4GiC/XyH6/ODFlvrNWDgtRk=";
+            hash = "sha256-iPPFOiNxguhyrDBhzIwSnnWuy86Erq2DQiXYEDCWwlQ=";
           };
           aarch64-linux = {
             url = "https://github.com/imputnet/helium-linux/releases/download/${versions.linux}/helium-${versions.linux}-arm64_linux.tar.xz";
-            hash = "sha256-cguQtVwZDCUGnSRD8SGgw8T+5wVWQGDXuNPyGaqeHvA=";
-          };
-          x86_64-darwin = {
-            url = "https://github.com/imputnet/helium-macos/releases/download/${versions.darwin}/helium_${versions.darwin}_x86_64-macos.dmg";
-            hash = "sha256-re44nDAupBRLKhx/1hMGhgCo+NWsXe9kew3YWPEiiAE=";
+            hash = "sha256-shm+E3Rbq0/H9wBqlSTPZ/mfw2zS5vlFIRejn+6G1Ak=";
           };
           aarch64-darwin = {
             url = "https://github.com/imputnet/helium-macos/releases/download/${versions.darwin}/helium_${versions.darwin}_arm64-macos.dmg";
-            hash = "sha256-6OuyKs3TUApFe2lonEjFhkE5c9Fyyc+j3ypfin43OEQ=";
+            hash = "sha256-PevQ8vOjzw9L+l375NgHozkcF8dSF4vkRJcZJF7QYQs=";
           };
         };
 
@@ -132,15 +124,13 @@
               runHook preInstall
 
               mkdir -p $out/Applications/Helium.app
-              cp -r . $out/Applications/Helium.app
+              cp -r Helium.app/. "$out/Applications/Helium.app"
 
               mkdir -p $out/bin
+              # Override only the browser updater's feed. The shared updates
+              # preference also controls CRLSet, so it must remain available.
               makeWrapper $out/Applications/Helium.app/Contents/MacOS/Helium $out/bin/helium \
-                --add-flags "--disable-component-update" \
-                --add-flags "--simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'" \
-                --add-flags "--check-for-update-interval=0" \
-                --add-flags "--disable-background-networking"
-
+                --add-flags "--custom-update-server-url=about:blank"
 
               runHook postInstall
             ''
@@ -160,13 +150,9 @@
                 alsa-lib
                 libpulseaudio
               ])}" \
-                --add-flags "--ozone-platform-hint=wayland" \
-                --add-flags "--enable-features=WaylandWindowDecorations" \
-                --add-flags "--disable-component-update" \
-                --add-flags "--simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'" \
-                --add-flags "--check-for-update-interval=0" \
-                --add-flags "--disable-background-networking"
-
+                --prefix QT_PLUGIN_PATH : "${pkgs.kdePackages.qtbase}/${pkgs.kdePackages.qtbase.qtPluginPrefix}" \
+                --add-flags "--ozone-platform-hint=auto" \
+                --add-flags "--enable-features=WaylandWindowDecorations"
 
               # Install icon
               mkdir -p $out/share/icons/hicolor/256x256/apps
@@ -193,7 +179,7 @@
             description = "Private, fast, and honest web browser";
             homepage = "https://helium.computer/";
             license = licenses.gpl3Only;
-            platforms = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
+            platforms = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
             mainProgram = "helium";
           };
         };

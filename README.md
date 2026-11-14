@@ -2,6 +2,16 @@
 
 A standalone Nix flake for the [Helium browser](https://helium.computer/), a private, fast, and honest web browser based on ungoogled-chromium.
 
+## Supported platforms
+
+| Operating system | Architecture | Nix system | Package set |
+| --- | --- | --- | --- |
+| Linux | x86-64 (Intel/AMD) | `x86_64-linux` | `nixos-unstable` |
+| Linux | ARM64 | `aarch64-linux` | `nixos-unstable` |
+| macOS | Apple Silicon | `aarch64-darwin` | `nixos-unstable` |
+
+Intel macOS is no longer supported.
+
 ## Usage
 
 ### Run directly
